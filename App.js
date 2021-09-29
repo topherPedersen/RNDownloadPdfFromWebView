@@ -28,7 +28,17 @@ class App extends React.Component {
 
   downloadPdfFromUrl = (pdfUrl) => {
     const configOptions = {
+      /*
+       * "If the [RNFetchBlob] response data is large, that would be a bad idea
+       * to convert it into BASE64 string. A better solution is streaming the
+       * response directly into a file, simply add a fileCache option to config,
+       * and set it to true. This will make incoming response data stored in a
+       * temporory path WITHOUT any file extension."
+       * 
+       * https://github.com/joltup/rn-fetch-blob#download-to-storage-directly
+       */
       fileCache: true,
+      appendExt: '.pdf', // Append file extension so iOS knows how to open file
       addAndroidDownloads: {
         useDownloadManager: true,
         notification: true,
@@ -40,7 +50,7 @@ class App extends React.Component {
       .config(configOptions)
       .fetch('GET', pdfUrl)
       .then((result) => {
-        RNFetchBlob.ios.previewDocument(result.data)
+        RNFetchBlob.ios.openDocument(result.data)
           .catch((error) => {
             alert(`ERROR: ${JSON.stringify(error)}`);
           });
